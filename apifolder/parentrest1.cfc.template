@@ -1,0 +1,51 @@
+component restpath="/parentrestService" produces="application/json"
+{
+  remote void function sayHello(required String thename restargsource="Path",
+                                String yourage restargsource="Path") httpmethod="GET" restPath="parenthello/{thename}/{yourage}"
+  {
+    try {
+      var msg = {};
+      msg.body = "Parent Hello there " & arguments.thename & " " & arguments.yourage;
+      msg.status = 200;
+
+      var customResponse = structNew();
+      customResponse.status = msg.status;
+      customResponse.content = msg;
+      customResponse.headers = structNew();
+      customResponse.headers.location = "http://www.adobe.com";
+      throw(message = "random error message",
+            detail = "",
+            errorcode = 400);
+      restSetResponse(customresponse);
+ //    return SerializeJson(rest);
+    }
+    catch (any e) {
+      var msg = {};
+      msg.errorMessage = e.message;
+      msg.detail = e.detail;
+      msg.status = e.errorcode;
+
+      var customResponse = structNew();
+      customResponse.status = msg.status;
+      customResponse.content = msg;
+      restSetResponse(customresponse);
+    }
+  }
+}
+
+
+//restargsource
+//path,query,matrix,form,cookie and header
+
+//However, if you specify the produces attribute at both the component and function level, the produces attribute specified at the function level takes precedence.
+
+
+//You must set the returntype attribute of the function to void when a custom response is returned using the function restSetResponse. The code snippet sets the status code, response body (content) and header information in a response object (struct) and sends it to the client using the restSetResponse function.
+//You can use the cfthrow tag to specify the status code by providing a value to the errorcode attribute.You can include the exception detail, message, and type in the response body when returning the data to the client.
+
+
+//200 OK
+//204 No Content
+
+//User own resource ID should be avoided. Use /me/orders instead of /user/654321/orders.
+
