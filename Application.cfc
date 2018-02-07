@@ -35,15 +35,15 @@
   };
 
   public boolean function OnApplicationStart(){
-  	Application.datasource = this.dataSource;
-    Application.EmailAppenderAddress = "sam.mcknight@byu.edu";
+    Application.datasource = this.dataSource;
     Application.webAnalyticsSvc = new orm.service.web_AnalyticsService();
 
     Application.Server.ServerIPAddress = CreateObject("java", "java.net.InetAddress").getLocalHost().getHostAddress();
     Application.System.SystemUserId = 0; //This is so that records can have created_by and updated_by values that meet the FK restraints.
 
     Application.RESTCodes = new lib.RESTStatusCodes();
-
+    
+    reloadVariables();
     setUpLogBox();
     setupTimeConverter();
     /* 1/6/2018: The RestInitApplication function must be called from the root Application.cfc. It must map to /
@@ -62,7 +62,6 @@
   }
 
   public void function OnSessionStart(){
-    Application.EmailAppenderAddress = "sam.mcknight@byu.edu";
     Application.debugLogger.debug("Session started");
     /* Makes the cookies browser session dependent so the session is killed when the browser is closed */
     if (StructKeyExists(Session, "CFID") == True)
@@ -160,25 +159,26 @@
 
   public void function reloadVariables()
   {
-    var item = ORMExecuteQuery("FROM variable WHERE name = :thename", {thename = "Bootstrap CDN"}, True, {datasource="ees"});
+    var item = ORMExecuteQuery("FROM variable WHERE name = :thename", {thename = "Bootstrap CDN"}, True, {datasource=Application.datasource});
     Application.CDNUrl.Bootstrap = item.getValue();
 
-    var item = ORMExecuteQuery("FROM variable WHERE name = :thename", {thename = "AngularJS CDN"}, True, {datasource="ees"});
+    var item = ORMExecuteQuery("FROM variable WHERE name = :thename", {thename = "AngularJS CDN"}, True, {datasource=Application.datasource});
     Application.CDNUrl.AngularJs= item.getValue();
 
-    var item = ORMExecuteQuery("FROM variable WHERE name = :thename", {thename = "AngularUI CDN"}, True, {datasource="ees"});
+    var item = ORMExecuteQuery("FROM variable WHERE name = :thename", {thename = "AngularUI CDN"}, True, {datasource=Application.datasource});
     Application.CDNUrl.AngularUI= item.getValue();
 
-    var item = ORMExecuteQuery("FROM variable WHERE name = :thename", {thename = "JQuery CDN"}, True, {datasource="ees"});
+    var item = ORMExecuteQuery("FROM variable WHERE name = :thename", {thename = "JQuery CDN"}, True, {datasource=Application.datasource});
     Application.CDNUrl.Jquery = item.getValue();
 
-    var item = ORMExecuteQuery("FROM variable WHERE name = :thename", {thename = "Visual Theme CDN"}, True, {datasource="ees"});
+    var item = ORMExecuteQuery("FROM variable WHERE name = :thename", {thename = "Visual Theme CDN"}, True, {datasource=Application.datasource});
     Application.CDNUrl.VisualTheme = item.getValue();
 
-    var item = ORMExecuteQuery("FROM variable WHERE name = :thename", {thename = "Font Awesome CDN"}, True, {datasource="ees"});
+    var item = ORMExecuteQuery("FROM variable WHERE name = :thename", {thename = "Font Awesome CDN"}, True, {datasource=Application.datasource});
     Application.CDNUrl.FontAwesome = item.getValue();
 
-    Application.EmailAppenderAddress = "sam.mcknight@byu.edu";
+    var item = ORMExecuteQuery("FROM variable WHERE name = :thename", {thename = "Email Appender Address"}, True, {datasource=Application.datasource});
+    Application.EmailAppenderAddress = item.getValue();
   }
 
   private void function setUpLogBox()
